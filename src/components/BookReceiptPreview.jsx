@@ -19,7 +19,7 @@ export default function BookReceiptPreview({ data }) {
 
       <div className="book-two-col">
         <div className="book-bill-to">
-          <div className="book-section-title" style={{ color: '#2c5f8a' }}>Bill To,</div>
+          <div className="book-section-title">Bill To,</div>
           <div className="book-detail-line">
             <span className="book-detail-label">Customer Name:</span> {data.customerName}
           </div>
@@ -34,7 +34,7 @@ export default function BookReceiptPreview({ data }) {
           </div>
         </div>
         <div className="book-sold-by">
-          <div className="book-section-title" style={{ color: '#2c5f8a' }}>Sold By,</div>
+          <div className="book-section-title">Sold By,</div>
           <div className="book-detail-line">
             <span className="book-detail-label">Store Name:</span> {data.storeName}
           </div>
@@ -75,7 +75,7 @@ export default function BookReceiptPreview({ data }) {
         <span className="book-total-amount">₹ {isNaN(total) ? '0' : total}</span>
       </div>
 
-      <hr className="book-hr" style={{ borderTopWidth: '1px', borderColor: '#ddd' }} />
+      <hr className="book-hr book-hr-light" />
 
       <div className="book-thankyou">Thank You ! Visit Again</div>
 

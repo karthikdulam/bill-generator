@@ -33,7 +33,7 @@ const defaultFuelData = {
   date: '2025-05-31',
   time: '12:36',
   mode: 'Online',
-  logo: '/logos/hp-logo.png',
+  logo: import.meta.env.BASE_URL + 'logos/hp-logo.png',
   watermarkText: 'HDFC BANK',
   serialNo: 'A127016',
 }
@@ -68,7 +68,7 @@ const defaultInternetData = {
   planPackage: 'FUP',
   planValidity: 'Monthly',
   planAmount: '1500',
-  logo: '/logos/act-logo.png',
+  logo: import.meta.env.BASE_URL + 'logos/act-logo.png',
 }
 
 const defaultRentData = {

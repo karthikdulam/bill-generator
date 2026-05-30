@@ -114,7 +114,7 @@ export default function FuelBillForm({ data, onChange }) {
       <div className="logo-upload-group">
         <label>Side Logo (vertical strip)</label>
         <div className="logo-upload-area">
-          <img src={data.sideLogo || '/logos/side-logo.png'} alt="Side" className="logo-preview-thumb" onError={e => { e.target.style.display = 'none' }} />
+          <img src={data.sideLogo || import.meta.env.BASE_URL + 'logos/side-logo.png'} alt="Side" className="logo-preview-thumb" onError={e => { e.target.style.display = 'none' }} />
           <button className="logo-upload-btn" onClick={() => {
             const input = document.createElement('input')
             input.type = 'file'

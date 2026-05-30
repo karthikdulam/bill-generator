@@ -35,7 +35,7 @@ export default function InternetBillPreview({ data }) {
 
       <div className="internet-two-col">
         <div className="internet-billed-to">
-          <div className="internet-section-title" style={{ color: '#2c5f8a' }}>Billed To,</div>
+          <div className="internet-section-title">Billed To,</div>
           <div className="internet-detail-line">
             <span className="internet-detail-label">Customer Name:</span> {data.customerName}
           </div>
@@ -47,10 +47,10 @@ export default function InternetBillPreview({ data }) {
           </div>
         </div>
         <div className="internet-provider">
-          <div className="internet-section-title" style={{ color: '#2c5f8a' }}>Internet Provider Details</div>
+          <div className="internet-section-title">Internet Provider Details</div>
           <div className="internet-detail-line">{data.providerName}</div>
-          <div className="internet-detail-line" style={{ marginTop: '4px' }}>{data.providerAddress}</div>
-          <div className="internet-detail-line" style={{ marginTop: '4px' }}>
+          <div className="internet-detail-line">{data.providerAddress}</div>
+          <div className="internet-detail-line">
             Billing Cycle: {data.billingCycle}
           </div>
         </div>
@@ -88,7 +88,8 @@ export default function InternetBillPreview({ data }) {
       </table>
 
       <div className="internet-total-row">
-        Total: ₹ {data.planAmount}
+        <span className="internet-total-label">Total:</span>{' '}
+        <span className="internet-total-amount">₹ {data.planAmount}</span>
       </div>
 
       <hr style={{ border: 'none', borderTop: '1px solid #ddd', margin: '16px 0' }} />
@@ -97,7 +98,7 @@ export default function InternetBillPreview({ data }) {
         ALL PAYMENTS TO BE MADE IN FAVOUR OF {data.providerName}
       </div>
 
-      <div className="internet-footer" style={{ marginTop: '8px', color: '#666' }}>
+      <div className="internet-footer-note">
         THIS IS A COMPUTER GENERATED INVOICE AND DOES NOT REQUIRE ANY SIGNATURE
       </div>
     </div>

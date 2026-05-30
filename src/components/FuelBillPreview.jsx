@@ -5,7 +5,7 @@ const FuelBillPreview = forwardRef(function FuelBillPreview({ data }, ref) {
   const [logoError, setLogoError] = useState(false)
   const [rotatedSideUrl, setRotatedSideUrl] = useState(null)
   const [wmOffset, setWmOffset] = useState(() => Math.floor(Math.random() * 300))
-  const sideSrc = data.sideLogo || '/logos/side-logo.png'
+  const sideSrc = data.sideLogo || import.meta.env.BASE_URL + 'logos/side-logo.png'
 
   useImperativeHandle(ref, () => ({
     reloadWatermark() {

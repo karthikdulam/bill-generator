@@ -1,8 +1,11 @@
-import { useState, useRef, useCallback, createRef } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import html2canvas from 'html2canvas'
 import { jsPDF } from 'jspdf'
 import './App.css'
 
+import { getSession, getAdminData, logout, isAdmin } from './auth'
+import Login from './components/Login'
+import AdminPanel from './components/AdminPanel'
 import FuelBillForm from './components/FuelBillForm'
 import FuelBillPreview from './components/FuelBillPreview'
 import BookReceiptForm from './components/BookReceiptForm'
@@ -12,6 +15,8 @@ import InternetBillPreview from './components/InternetBillPreview'
 import RentReceiptForm from './components/RentReceiptForm'
 import RentReceiptPreview from './components/RentReceiptPreview'
 
+const BASE = import.meta.env.BASE_URL
+
 const BILL_TYPES = [
   { id: 'fuel', label: 'Fuel Bill', icon: '⛽', desc: 'Petrol / Diesel receipt' },
   { id: 'book', label: 'Book Receipt', icon: '📖', desc: 'Bookstore purchase receipt' },
@@ -19,89 +24,102 @@ const BILL_TYPES = [
   { id: 'rent', label: 'Rent Receipt', icon: '🏠', desc: 'Monthly rent receipt' },
 ]
 
-const defaultFuelData = {
-  stationName: 'Hindustan Petroleum\nCorporation Limited',
-  stationAddress: 'CA Site No 1, Mchs Layout, 4th Sector, HSR Layout, Bengaluru, Karnataka 560102',
-  receiptNo: '13406',
-  product: 'Petrol',
-  rateLtr: '108.79',
-  amount: '1460',
-  volume: '13.42',
-  vehicleType: 'Petrol',
-  vehicleNo: 'TS24F7825',
-  customerName: 'Karthik',
-  date: '2025-05-31',
-  time: '12:36',
-  mode: 'Online',
-  logo: import.meta.env.BASE_URL + 'logos/hp-logo.png',
-  watermarkText: 'HDFC BANK',
-  serialNo: 'A127016',
+function emptyFuelData() {
+  return {
+    stationName: '', stationAddress: '', receiptNo: '', product: 'Petrol',
+    rateLtr: '', amount: '', volume: '', vehicleType: 'Petrol', vehicleNo: '',
+    customerName: '', date: '', time: '', mode: 'Online',
+    logo: BASE + 'logos/hp-logo.png', watermarkText: '', serialNo: ''
+  }
 }
 
-const defaultBookData = {
-  receiptNo: 'R03299',
-  receiptDate: '2025-05-09',
-  customerName: 'Karthik Dulam',
-  bookName: 'Modern Systems Analysis and Design',
-  author: 'Joseph S.Valacich',
-  publisher: 'Pearson',
-  paymentMethod: 'Card',
-  storeName: 'Blossom Book House',
-  storeAddress: '3rd Floor, Prestige Commercial Complex, Church St, above Matteo Coffea, Shanthala Nagar, Ashok Nagar, Bengaluru, Karnataka 560001',
-  description: 'Prioritising the practical over the technical, Modern Systems Analysis and Design presents the concepts, skills, methodologies, techniques, tools, and perspectives essential for systems analysts to develop information systems.',
-  qty: '1',
-  price: '6378',
+function emptyBookData() {
+  return {
+    receiptNo: '', receiptDate: '', customerName: '', bookName: '',
+    author: '', publisher: '', paymentMethod: 'Card', storeName: '',
+    storeAddress: '', description: '', qty: '', price: ''
+  }
 }
 
-const defaultInternetData = {
-  receiptNumber: 'IN14728',
-  date: '2025-04-01',
-  customerName: 'Karthik Dulam',
-  customerAddress: 'G02, Sri nanjudeshwara Swami nilaya apartment, Rajiv Gandhi nagar, Bommanahalli, Bengaluru, Karanataka, 560068',
-  billAccountNumber: '102649087107',
-  paymentMethod: 'Online',
-  receiptDate: '2025-04-01',
-  providerName: 'ATRIA CONVERGENCE TECHNOLOGIES LIMITED',
-  providerAddress: 'Golden Heights M.NO.1/2, 59TH C Cross,4TH M Block Rajajinagar, Bangalore, 560010',
-  billingCycle: 'Monthly',
-  planSpeed: '200Mbps',
-  planPackage: 'FUP',
-  planValidity: 'Monthly',
-  planAmount: '1500',
-  logo: import.meta.env.BASE_URL + 'logos/act-logo.png',
+function emptyInternetData() {
+  return {
+    receiptNumber: '', date: '', customerName: '', customerAddress: '',
+    billAccountNumber: '', paymentMethod: 'Online', receiptDate: '',
+    providerName: '', providerAddress: '', billingCycle: 'Monthly',
+    planSpeed: '', planPackage: '', planValidity: 'Monthly', planAmount: '',
+    logo: BASE + 'logos/act-logo.png'
+  }
 }
 
-const defaultRentData = {
-  receiptNo: 'RR-2025-001',
-  date: '2025-05-01',
-  tenantName: 'Karthik Dulam',
-  landlordName: 'Sri Nanjundeshwara',
-  landlordPan: 'ABCDE1234F',
-  propertyAddress: 'G02, Sri nanjudeshwara Swami nilaya apartment, Rajiv Gandhi nagar, Bommanahalli, Bengaluru, Karnataka, 560068',
-  rentAmount: '15000',
-  rentPeriod: 'May 2025',
-  paymentMode: 'Online Transfer',
+function emptyRentData() {
+  return {
+    receiptNo: '', date: '', tenantName: '', landlordName: '',
+    landlordPan: '', propertyAddress: '', rentAmount: '',
+    rentPeriod: '', paymentMode: 'Online Transfer'
+  }
+}
+
+function buildInitialData(adminData) {
+  if (!adminData) {
+    return {
+      fuel: emptyFuelData(),
+      book: emptyBookData(),
+      internet: emptyInternetData(),
+      rent: emptyRentData()
+    }
+  }
+  return {
+    fuel: { ...adminData.fuel, logo: BASE + 'logos/hp-logo.png' },
+    book: { ...adminData.book },
+    internet: { ...adminData.internet, logo: BASE + 'logos/act-logo.png' },
+    rent: { ...adminData.rent }
+  }
 }
 
 function App() {
+  const [session, setSession] = useState(() => getSession())
   const [activeType, setActiveType] = useState('fuel')
-  const [fuelData, setFuelData] = useState(defaultFuelData)
-  const [bookData, setBookData] = useState(defaultBookData)
-  const [internetData, setInternetData] = useState(defaultInternetData)
-  const [rentData, setRentData] = useState(defaultRentData)
   const [isFullScreen, setIsFullScreen] = useState(false)
   const [fileName, setFileName] = useState('')
   const previewRef = useRef(null)
   const fuelPreviewRef = useRef(null)
 
-  const getCurrentData = () => {
-    switch (activeType) {
-      case 'fuel': return fuelData
-      case 'book': return bookData
-      case 'internet': return internetData
-      case 'rent': return rentData
-      default: return {}
-    }
+  const initData = buildInitialData(session?.r === 'admin' ? getAdminData() : null)
+  const [fuelData, setFuelData] = useState(initData.fuel)
+  const [bookData, setBookData] = useState(initData.book)
+  const [internetData, setInternetData] = useState(initData.internet)
+  const [rentData, setRentData] = useState(initData.rent)
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const s = getSession()
+      if (!s && session) {
+        setSession(null)
+      }
+    }, 10000)
+    return () => clearInterval(interval)
+  }, [session])
+
+  const handleLogin = (s) => {
+    setSession(s)
+    const data = buildInitialData(s.r === 'admin' ? getAdminData() : null)
+    setFuelData(data.fuel)
+    setBookData(data.book)
+    setInternetData(data.internet)
+    setRentData(data.rent)
+  }
+
+  const handleLogout = () => {
+    logout()
+    setSession(null)
+    setFuelData(emptyFuelData())
+    setBookData(emptyBookData())
+    setInternetData(emptyInternetData())
+    setRentData(emptyRentData())
+  }
+
+  if (!session) {
+    return <Login onLogin={handleLogin} />
   }
 
   const getSetCurrentData = () => {
@@ -114,10 +132,10 @@ function App() {
     }
   }
 
-  const handleFieldChange = useCallback((field, value) => {
+  const handleFieldChange = (field, value) => {
     const setter = getSetCurrentData()
     setter(prev => ({ ...prev, [field]: value }))
-  }, [activeType])
+  }
 
   const capturePreview = async () => {
     if (!previewRef.current) return null
@@ -193,6 +211,14 @@ function App() {
         <div className="header-left">
           <h1 className="app-title">Bill Generator</h1>
           <span className="app-subtitle">Generate professional receipts & invoices</span>
+        </div>
+        <div className="header-right">
+          {session.r === 'admin' && <AdminPanel />}
+          <div className="user-info">
+            <span className="user-name">{session.u}</span>
+            {session.r === 'admin' && <span className="user-badge">Admin</span>}
+          </div>
+          <button className="logout-btn" onClick={handleLogout}>Logout</button>
         </div>
       </header>
 

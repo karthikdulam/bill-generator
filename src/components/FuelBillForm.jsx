@@ -22,6 +22,10 @@ export default function FuelBillForm({ data, onChange }) {
           </button>
           <input ref={fileRef} type="file" accept="image/*" hidden onChange={handleLogo} />
         </div>
+        <div className="logo-size-slider">
+          <label>Logo Size: {data.logoSize || 60}px</label>
+          <input type="range" min="20" max="150" value={data.logoSize || 60} onChange={e => onChange('logoSize', Number(e.target.value))} />
+        </div>
       </div>
 
       <div className="form-section-divider">Station Details</div>

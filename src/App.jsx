@@ -29,7 +29,7 @@ function emptyFuelData() {
     stationName: '', stationAddress: '', receiptNo: '', product: 'Petrol',
     rateLtr: '', amount: '', volume: '', vehicleType: 'Petrol', vehicleNo: '',
     customerName: '', date: '', time: '', mode: 'Online',
-    logo: BASE + 'logos/hp-logo.png', watermarkText: '', serialNo: ''
+    logo: BASE + 'logos/hp-logo.png', logoSize: 60, watermarkText: '', serialNo: ''
   }
 }
 
@@ -47,7 +47,7 @@ function emptyInternetData() {
     billAccountNumber: '', paymentMethod: 'Online', receiptDate: '',
     providerName: '', providerAddress: '', billingCycle: 'Monthly',
     planSpeed: '', planPackage: '', planValidity: 'Monthly', planAmount: '',
-    logo: BASE + 'logos/act-logo.png'
+    logo: BASE + 'logos/act-logo.png', logoSize: 80
   }
 }
 
@@ -59,20 +59,28 @@ function emptyRentData() {
   }
 }
 
+function nowDateAndTime() {
+  const now = new Date()
+  const date = now.toISOString().slice(0, 10)
+  const time = now.toTimeString().slice(0, 5)
+  return { date, time }
+}
+
 function buildInitialData(adminData) {
+  const { date, time } = nowDateAndTime()
   if (!adminData) {
     return {
-      fuel: emptyFuelData(),
-      book: emptyBookData(),
-      internet: emptyInternetData(),
-      rent: emptyRentData()
+      fuel: { ...emptyFuelData(), date, time },
+      book: { ...emptyBookData(), receiptDate: date },
+      internet: { ...emptyInternetData(), date, receiptDate: date },
+      rent: { ...emptyRentData(), date }
     }
   }
   return {
-    fuel: { ...adminData.fuel, logo: BASE + 'logos/hp-logo.png' },
-    book: { ...adminData.book },
-    internet: { ...adminData.internet, logo: BASE + 'logos/act-logo.png' },
-    rent: { ...adminData.rent }
+    fuel: { ...adminData.fuel, logo: BASE + 'logos/hp-logo.png', date, time },
+    book: { ...adminData.book, receiptDate: date },
+    internet: { ...adminData.internet, logo: BASE + 'logos/act-logo.png', date, receiptDate: date },
+    rent: { ...adminData.rent, date }
   }
 }
 

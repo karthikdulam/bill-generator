@@ -46,6 +46,7 @@ const FuelBillPreview = forwardRef(function FuelBillPreview({ data }, ref) {
             <img
               src={data.logo}
               alt=""
+              style={{ width: data.logoSize || 60, height: data.logoSize || 60 }}
               onError={() => setLogoError(true)}
             />
           ) : (

@@ -22,6 +22,10 @@ export default function InternetBillForm({ data, onChange }) {
           </button>
           <input ref={fileRef} type="file" accept="image/*" hidden onChange={handleLogo} />
         </div>
+        <div className="logo-size-slider">
+          <label>Logo Size: {data.logoSize || 80}px</label>
+          <input type="range" min="20" max="200" value={data.logoSize || 80} onChange={e => onChange('logoSize', Number(e.target.value))} />
+        </div>
       </div>
 
       <div className="form-section-divider">Receipt Details</div>

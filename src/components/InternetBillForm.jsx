@@ -88,8 +88,8 @@ export default function InternetBillForm({ data, onChange }) {
         <select value={data.billingCycle} onChange={e => onChange('billingCycle', e.target.value)}>
           <option>Monthly</option>
           <option>Quarterly</option>
-          <option>Half Yearly</option>
-          <option>Yearly</option>
+          <option>Half Year</option>
+          <option>Annual</option>
         </select>
       </div>
 

@@ -141,7 +141,7 @@ function App() {
     if (!previewRef.current) return null
     const el = previewRef.current
     const canvas = await html2canvas(el, {
-      scale: 8,
+      scale: 2,
       useCORS: true,
       backgroundColor: null,
       logging: false,
@@ -161,7 +161,7 @@ function App() {
   const downloadPDF = async () => {
     const canvas = await capturePreview()
     if (!canvas) return
-    const imgData = canvas.toDataURL('image/png')
+    const imgData = canvas.toDataURL('image/jpeg', 0.6)
     const imgWidth = canvas.width
     const imgHeight = canvas.height
     const pdfWidth = imgWidth * 0.264583
@@ -171,7 +171,7 @@ function App() {
       unit: 'mm',
       format: [pdfWidth, pdfHeight],
     })
-    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight)
+    pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight)
     pdf.save(`${fileName.trim() || activeType + '-receipt'}.pdf`)
   }
 

@@ -14,6 +14,7 @@ export default function InternetBillPreview({ data }) {
             <img
               src={data.logo}
               alt="Provider Logo"
+              style={{ width: data.logoSize || 80, height: data.logoSize || 80 }}
               onError={() => setLogoError(true)}
             />
           ) : (
